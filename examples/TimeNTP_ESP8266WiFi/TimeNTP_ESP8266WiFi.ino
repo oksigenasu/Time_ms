@@ -29,6 +29,8 @@ const int timeZone = 1;     // Central European Time
 WiFiUDP Udp;
 unsigned int localPort = 8888;  // local port to listen for UDP packets
 
+int extraMs = 0; // variable for saving extra millisecond from NTP packet
+
 time_t getNtpTime();
 void digitalClockDisplay();
 void printDigits(int digits);
@@ -69,6 +71,12 @@ void loop()
       prevDisplay = now();
       digitalClockDisplay();
     }
+        //adjust extra millis here
+    if (extraMs > 0){
+      extraMs > 200 ? adjustTimeMS(-200) : adjustTimeMS(-extraMs) ; 
+      extraMs > 200 ? extraMs =- 200 : extraMs = 0 ;
+    } 
+    /* feel free to implement better function :) */
   }
 }
 
@@ -125,6 +133,17 @@ time_t getNtpTime()
       secsSince1900 |= (unsigned long)packetBuffer[41] << 16;
       secsSince1900 |= (unsigned long)packetBuffer[42] << 8;
       secsSince1900 |= (unsigned long)packetBuffer[43];
+
+      unsigned long frac;
+      // convert four bytes starting at location 44 to a long integer (fraction of seconds)
+      frac = (unsigned long)packetBuffer[44] << 24;
+      frac |= (unsigned long)packetBuffer[45] << 16;
+      frac |= (unsigned long)packetBuffer[46] << 8;
+      frac |= (unsigned long)packetBuffer[47] << 0;
+      uint32_t mSec = ((uint64_t)frac * 1000) >> 32; //we got extra millis in here
+
+      extraMs = mSec; //add ms to extra milli second
+
       return secsSince1900 - 2208988800UL + timeZone * SECS_PER_HOUR;
     }
   }

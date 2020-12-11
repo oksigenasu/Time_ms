@@ -27,6 +27,9 @@ const int timeZone = 1;     // Central European Time
 EthernetUDP Udp;
 unsigned int localPort = 8888;  // local port to listen for UDP packets
 
+int dissipateSecond = 0; // variable for saving extra millisecond from NTP packet
+int adjustFlag = 0;      // variable to adjust TimeLib if there are extra millisecond
+
 void setup() 
 {
   Serial.begin(9600);
@@ -56,6 +59,22 @@ void loop()
       prevDisplay = now();
       digitalClockDisplay();  
     }
+
+    //adjust extra millis here
+    if (adjustFlag)
+    {
+      if (dissipateSecond > 200)
+      { // dissipate extra ms in 200 increment so it doesn't just jump
+        adjustTimeMS(-200);
+        dissipateSecond = dissipateSecond - 200;
+      }
+      else
+      {
+        adjustTimeMS(-dissipateSecond);
+        adjustFlag = 0;
+      }
+    }
+    /* feel free to implement better function :) */
   }
 }
 
@@ -103,6 +122,18 @@ time_t getNtpTime()
       secsSince1900 |= (unsigned long)packetBuffer[41] << 16;
       secsSince1900 |= (unsigned long)packetBuffer[42] << 8;
       secsSince1900 |= (unsigned long)packetBuffer[43];
+
+      unsigned long frac;
+      // convert four bytes starting at location 44 to a long integer (fraction of seconds)
+      frac = (unsigned long)packetBuffer[44] << 24;
+      frac |= (unsigned long)packetBuffer[45] << 16;
+      frac |= (unsigned long)packetBuffer[46] << 8;
+      frac |= (unsigned long)packetBuffer[47] << 0;
+      uint32_t mssec = ((uint64_t)frac * 1000) >> 32; //we got extra millis in here
+
+      dissipateSecond = mssec; //add ms to dissipated second
+      adjustFlag = 1; //we need to adjust extra millis
+
       return secsSince1900 - 2208988800UL + timeZone * SECS_PER_HOUR;
     }
   }

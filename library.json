@@ -1,7 +1,7 @@
 {
-    "name": "Time",
-    "description": "Time keeping library",
-    "keywords": "Time, date, hour, minute, second, day, week, month, year, RTC",
+    "name": "Time_custom",
+    "description": "Time keeping library (with custom Ms Adjustment)",
+    "keywords": "Time, date, hour, minute, second, day, week, month, year, RTC, millisecond",
     "authors": [
         {
             "name": "Michael Margolis"
@@ -11,11 +11,15 @@
             "email": "paul@pjrc.com",
             "url": "http://www.pjrc.com",
             "maintainer": true
+        },
+        {
+            "name": "Zeta DeGray",
+            "email": "oksigenasu@yahoo.com"
         }
     ],
     "repository": {
         "type": "git",
-         "url": "https://github.com/PaulStoffregen/Time"
+         "url": "https://github.com/oksigenasu/Time_ms"
     },
     "version": "1.6",
     "homepage": "http://playground.arduino.cc/Code/Time",

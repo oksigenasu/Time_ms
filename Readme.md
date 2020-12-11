@@ -1,3 +1,8 @@
+# Customization
+
+Added new function to adjust system time by millisecond (AdjustTimeMS).
+this function is helpful when used with NTP synchronization and looks cool in implementation.
+
 # Arduino Time Library
 
 Time is a library that provides timekeeping functionality for Arduino.
@@ -67,6 +72,7 @@ setTime(t);                      // set the system time to the give time t
 setTime(hr,min,sec,day,mnth,yr); // alternative to above, yr is 2 or 4 digit yr
                                  // (2010 or 10 sets year to 2010)
 adjustTime(adjustment);          // adjust system time by adding the adjustment value
+adjustTimeMS(adjustment);        // adjust system time millisecond by adding the adjustment value
 timeStatus();                    // indicates if time has been set and recently synchronized
                                  // returns one of the following enumerations:
 timeNotSet                       // the time has never been set, the clock started on Jan 1, 1970
